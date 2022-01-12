@@ -1,14 +1,14 @@
 import './App.css';
 import { useState, useEffect } from 'react';
 import Web3 from 'web3';
-import configuration from './UselessSquares.json';
+import configuration from '../build/contracts/UselessSquares.json';
 import { Header } from './Header';
+import { PlotPriceModal } from './components/PlotPriceModal';
+import { BuyPlotModal } from './components/BuyPlotModal';
 import {
   Button,
   Col,
   Container,
-  Form,
-  Modal,
   Row,
 } from 'react-bootstrap';
 
@@ -66,7 +66,7 @@ function App() {
     await contractObj.methods
       .buyPlot(
         selectedPlot.id,
-        web3.utils.asciiToHex(text),
+        escape(text).replace(/%/g, '/'),
         parseInt(color, 16)
       )
       .send({
@@ -140,10 +140,14 @@ function App() {
                     }}
                     className="plots_plot"
                   >
-                    <h3>{plot.text}</h3>
+                    <h3>
+                      {unescape(
+                        plot.text.replace(/\//g, '%')
+                      )}
+                    </h3>
                     {plot.owner === account &&
                       plot.salePrice !== '0' && (
-                        <h5>
+                        <h5 className="text-center">
                           listed for $
                           {weiToUsd(plot.salePrice)}
                         </h5>
@@ -188,95 +192,27 @@ function App() {
         </Row>
       </Container>
 
-      <Modal
-        show={showModal}
-        onHide={() => setShowModal(false)}
-      >
-        <Modal.Header closeButton>
-          <Modal.Title>
-            Buy Plot #{selectedPlot.id}
-          </Modal.Title>
-        </Modal.Header>
-
-        <Modal.Body>
-          <Form>
-            <Form.Group className="mb-3">
-              <Form.Label>Text</Form.Label>
-              <Form.Control
-                onChange={(e) => setText(e.target.value)}
-                type="text"
-                maxLength="7"
-                value={text}
-                placeholder="ヽ(´▽`)/"
-              />
-            </Form.Group>
-
-            <Form.Group className="mb-3">
-              <Form.Label>Color</Form.Label>
-              <Form.Control
-                onChange={(e) => setColor(e.target.value)}
-                type="text"
-                value={color}
-                placeholder="00ff00"
-              />
-            </Form.Group>
-          </Form>
-        </Modal.Body>
-
-        <Modal.Footer>
-          <Button
-            variant="secondary"
-            onClick={() => setShowModal(false)}
-          >
-            Close
-          </Button>
-          <Button variant="primary" onClick={buyPlot}>
-            Buy
-          </Button>
-        </Modal.Footer>
-      </Modal>
-
-      <Modal
+      <PlotPriceModal
+        onSetPrice={setPlotPrice}
+        plot={selectedPlot}
+        rates={rates}
+        salePrice={salePrice}
+        setSalePrice={setSalePrice}
+        onClose={() => setShowSellModal(false)}
         show={showSellModal}
-        onHide={() => setShowSellModal(false)}
-      >
-        <Modal.Header closeButton>
-          <Modal.Title>
-            List Plot for Sell #{selectedPlot.id}
-          </Modal.Title>
-        </Modal.Header>
+      />
 
-        <Modal.Body>
-          <p>WEI: {salePrice * rates * 1e18}</p>
-          <p>ETH: {salePrice * rates}</p>
-          <p>USD: {salePrice}</p>
-          <Form>
-            <Form.Group className="mb-3">
-              <Form.Label>List Price</Form.Label>
-              <Form.Control
-                onChange={(e) =>
-                  setSalePrice(e.target.value)
-                }
-                type="text"
-                value={salePrice}
-                placeholder="$40.00"
-              />
-            </Form.Group>
-          </Form>
-        </Modal.Body>
-
-        <Modal.Footer>
-          <Button
-            variant="secondary"
-            onClick={() => setShowSellModal(false)}
-          >
-            Close
-          </Button>
-          <Button variant="primary" onClick={setPlotPrice}>
-            List
-          </Button>
-        </Modal.Footer>
-      </Modal>
+      <BuyPlotModal
+        color={color}
+        onBuy={buyPlot}
+        plot={selectedPlot}
+        rates={rates}
+        setColor={setColor}
+        setShowModal={setShowModal}
+        setText={setText}
+        showModal={showModal}
+        text={text}
+      />
     </div>
   );
 }

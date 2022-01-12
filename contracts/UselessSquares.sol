@@ -19,7 +19,7 @@ contract UselessSquares {
         for (uint256 i = 0; i < TOTAL_PLOTS; i++) {
             plots[i] = Plot({
                 owner: owner,
-                text: "\u0e05^\u2022\ufecc\u2022^\u0e05",
+                text: "/u0CA0_/u0CA0",
                 color: 0xFF0000,
                 salePrice: 1e15
             });
