@@ -1,0 +1,16 @@
+.plots {
+}
+
+.plots__wrapper {
+  position: relative;
+}
+
+.plots_plot {
+  font-size: 14px;
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  transform: rotateX(60deg) rotateY(0deg) rotateZ(45deg);
+}
