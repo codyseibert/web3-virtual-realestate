@@ -16,7 +16,7 @@ contract('UselessSquares', (accounts) => {
       PLOT_ID,
       'yolo',
       0x00ff00,
-      { from: BUYER, value: plot.salePrice }
+      { from: BUYER, value: plot.price }
     );
     console.log(result.logs.map((log) => log.args));
     const plotAfter = await instance.plots(PLOT_ID);
@@ -24,7 +24,7 @@ contract('UselessSquares', (accounts) => {
       await web3.eth.getBalance(plot.owner)
     );
     assert.equal(
-      ownerBalanceBefore + BigInt(plot.salePrice),
+      ownerBalanceBefore + BigInt(plot.price),
       ownerBalanceAfter,
       'the original owner of the plot should be paid'
     );
@@ -34,7 +34,7 @@ contract('UselessSquares', (accounts) => {
       'plot should be owned by the buyer'
     );
     assert.equal(
-      plotAfter.salePrice,
+      plotAfter.price,
       0,
       'plot should no longer be for sale'
     );

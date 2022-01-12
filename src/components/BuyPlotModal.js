@@ -1,26 +1,44 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Button, Form, Modal } from 'react-bootstrap';
 
 export const BuyPlotModal = ({
-  color,
-  onBuy,
+  account,
+  contract,
+  onClose,
+  onComplete,
   plot,
-  setColor,
-  setShowModal,
-  setText,
-  showModal,
-  text,
+  rates,
+  show,
 }) => {
+  const [color, setColor] = useState('00FF00');
+  const [text, setText] = useState('YOLO');
+
+  const buyPlot = async () => {
+    await contract.methods
+      .buyPlot(
+        plot.id,
+        escape(text).replace(/%/g, '/'),
+        parseInt(color, 16)
+      )
+      .send({
+        from: account,
+        value: plot.price,
+      });
+    onClose(false);
+    onComplete();
+  };
+
   return (
-    <Modal
-      show={showModal}
-      onHide={() => setShowModal(false)}
-    >
+    <Modal show={show} onHide={() => onClose(false)}>
       <Modal.Header closeButton>
         <Modal.Title>Buy Plot #{plot.id}</Modal.Title>
       </Modal.Header>
 
       <Modal.Body>
+        <h3>
+          This plot costs $
+          {(plot.price / rates / 1e18).toFixed(2)}
+        </h3>
         <Form>
           <Form.Group className="mb-3">
             <Form.Label>Text</Form.Label>
@@ -47,11 +65,11 @@ export const BuyPlotModal = ({
       <Modal.Footer>
         <Button
           variant="secondary"
-          onClick={() => setShowModal(false)}
+          onClick={() => onClose(false)}
         >
           Close
         </Button>
-        <Button variant="primary" onClick={onBuy}>
+        <Button variant="primary" onClick={buyPlot}>
           Buy
         </Button>
       </Modal.Footer>
