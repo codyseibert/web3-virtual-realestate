@@ -36,60 +36,52 @@ export const Squares = ({
 
   return (
     <div className="plots">
-      <div className="plots__wrapper">
-        {plots.map((plot) => (
-          <div
-            key={plot.id}
-            style={{
-              backgroundColor: `#${numberToColorHex(
-                plot.color
-              )}`,
-              left: getLeft(plot.id),
-              top: getTop(plot.id),
-              width: SIZE,
-              height: SIZE,
-            }}
-            className="plots_plot"
-          >
-            <h3>
-              {unescape(plot.text.replace(/\//g, '%'))}
-            </h3>
-            {plot.owner === account &&
-              plot.price !== '0' && (
-                <h5 className="text-center">
-                  listed for ${weiToUsd(plot.price)}
-                </h5>
-              )}
+      {plots.map((plot) => (
+        <div
+          key={plot.id}
+          style={{
+            backgroundColor: `#${numberToColorHex(
+              plot.color
+            )}`,
+            left: getLeft(plot.id),
+            top: getTop(plot.id),
+            width: SIZE,
+            height: SIZE,
+          }}
+          className="plot"
+        >
+          <h3>{unescape(plot.text.replace(/\//g, '%'))}</h3>
+          {plot.owner === account && plot.price !== '0' && (
+            <h5 className="text-center">
+              ${weiToUsd(plot.price)}
+            </h5>
+          )}
 
-            {plot.price !== '0' && plot.owner !== account && (
-              <Button
-                variant="success"
-                onClick={() => {
-                  setSelectedPlot(plot);
-                  setShowModal(true);
-                }}
-              >
-                Buy $
-                {(plot.price / 1e18 / rates).toFixed(2)}
-              </Button>
-            )}
+          {plot.price !== '0' && plot.owner !== account && (
+            <Button
+              variant="success"
+              onClick={() => {
+                setSelectedPlot(plot);
+                setShowModal(true);
+              }}
+            >
+              Buy ${(plot.price / 1e18 / rates).toFixed(2)}
+            </Button>
+          )}
 
-            {plot.owner === account && (
-              <Button
-                variant="danger"
-                onClick={() => {
-                  setSelectedPlot(plot);
-                  setShowSellModal(true);
-                }}
-              >
-                {plot.price === '0'
-                  ? 'List for Sell'
-                  : 'Change List Price'}
-              </Button>
-            )}
-          </div>
-        ))}
-      </div>
+          {plot.owner === account && (
+            <Button
+              variant="danger"
+              onClick={() => {
+                setSelectedPlot(plot);
+                setShowSellModal(true);
+              }}
+            >
+              {plot.price === '0' ? 'Sell' : 'Change Price'}
+            </Button>
+          )}
+        </div>
+      ))}
     </div>
   );
 };
